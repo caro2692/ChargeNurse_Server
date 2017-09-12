@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(Cors());
 
-app.use('/patients', patients);
-app.use('/nurses', nurses);
+app.use('/api/patients', patients);
+app.use('/api/nurses', nurses);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
