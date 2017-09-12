@@ -6,7 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const Cors = require('cors');
 
-const index = require('./routes/index');
+const patients = require('./routes/patients');
+const nurses = require('./routes/nurses');
 
 const app = express();
 
@@ -18,7 +19,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(Cors());
 
-app.use('/', index);
+app.use('/patients', patients);
+app.use('/nurses', nurses);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
