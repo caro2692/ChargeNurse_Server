@@ -3,8 +3,8 @@ const Router = Express.Router();
 const Queries = require('../database/queries');
 
 /* GET home page. */
-Router.get('/', (req, res) => {
-  Queries.getAllPatients()
+Router.get('/shift/:id', (req, res) => {
+  Queries.getAllPatients(req.params.id)
     .then(result=>{
         res.send(result);
     });
