@@ -38,8 +38,7 @@ module.exports = {
             })
           })
 
-          console.log(nurses)
-
+          return nurses;
         })
       })
   },
