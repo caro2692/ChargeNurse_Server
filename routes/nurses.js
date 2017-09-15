@@ -2,8 +2,8 @@ const Express = require('express');
 const Router = Express.Router();
 const Queries = require('../database/queries');
 
-Router.get('/', (req, res) => {
-  Queries.getAllNurses()
+Router.get('/shift/:id', (req, res) => {
+  Queries.getAllNurses(req.params.id)
     .then(result=>{
         res.send(result);
     });
