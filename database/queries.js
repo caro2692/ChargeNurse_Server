@@ -36,38 +36,41 @@ module.exports = {
   getAllNurses: (shift_id) => {
     const promises = [
       knex('nurse'),
-      knex('patient_nurse').where('shift_id', shift_id)
+      knex('patient_nurse')
+      .select(['nurse_id', knex.raw('ARRAY_AGG(patient_id) as patients')])
+      .where('shift_id', shift_id)
+      .groupBy('nurse_id')
     ];
     return Promise.all(promises)
       .then(results=>{
         const nurses = results[0];
         const assignements = results[1];
+        //reduce assignemnts so the key is nurse id and value is patients for more efficient assignemnts
+        let initial_value = {};
+        var reducer = function(tally, value) {
+          console.log(value);
+          tally[value.nurse_id] = value.patients;
+          return tally;
+        };
+        var assignements_reduced = assignements.reduce(reducer,  initial_value);
         //go through assignement_nurse and have nurse_id: assignements
         return Promise.all(
           nurses.map(nurse=>{
             return knex('nurse_objective_acuity')
             .leftJoin('objective_acuity', 'nurse_objective_acuity.objective_acuity_id', 'objective_acuity.id')
+            .select('objective_acuity_id', 'value', 'name', 'data_type')
             .where('nurse_id', nurse.id)
             .then(nurse_oacuity=>{
               nurse.oacuity = nurse_oacuity;
             });
-          }),
-          assignements.map(assignement=>{
-            return knex('patient')
-            .where('id', assignement.patient_id)
-            .first()
-            .then(patient_info=>{
-              assignement.patient_info = patient_info;
-            });
           })
         ).then(()=>{
           nurses.forEach((nurse)=>{
-            nurse.patients = [];
-            assignements.forEach((assignement)=>{
-              if(assignement.nurse_id===nurse.id){
-                  nurse.patients.push(assignement);
-              }
-            });
+            if(assignements_reduced[nurse.id]){
+              nurse.patients = assignements_reduced[nurse.id];
+            } else {
+              nurse.patients = [];
+            }
           });
           return nurses;
         });
