@@ -2,26 +2,23 @@ const knex = require('./knex');
 
 module.exports = {
   getAllPatients: (shift_id) => {
-    const promises = [
-      knex('patient')
-    ];
-    return Promise.all(promises)
-      .then(results=> {
-        const patients = results[0];
+    return knex('patient')
+      .then(patients=> {
         return Promise.all(
           patients.map(patient=>{
             return knex('patient_objective_acuity')
             .leftJoin('objective_acuity', 'patient_objective_acuity.objective_acuity_id', 'objective_acuity.id')
+            .select('objective_acuity_id', 'value', 'name', 'data_type')
             .where('patient_id', patient.id)
             .andWhere('patient_objective_acuity.shift_id',shift_id)
             .then(patient_oacuity=>{
               patient.oacuity = patient_oacuity;
             });
           }),
-          //map same but for subjective
           patients.map(patient=>{
             return knex('patient_subjective_acuity')
             .leftJoin('subjective_acuity', 'patient_subjective_acuity.subjective_acuity_id', 'subjective_acuity.id')
+            .select('subjective_acuity_id', 'value', 'name', 'data_type', 'nurse_id')
             .where('patient_id', patient.id)
             .andWhere('patient_subjective_acuity.shift_id',shift_id)
             .then(patient_sacuity=>{
