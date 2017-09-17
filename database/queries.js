@@ -52,7 +52,7 @@ module.exports = {
     return Promise.all(promises)
       .then(results=>{
         const nurses = results[0];
-        const s = results[1];
+        const assignments = results[1];
         //reduce assignemnts so the key is nurse id and value is patients for more efficient assignemnts
         let initial_value = {};
         var reducer = function(tally, value) {
