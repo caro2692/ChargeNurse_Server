@@ -24,6 +24,15 @@ module.exports = {
             .then(patient_sacuity=>{
               patient.sacuity = patient_sacuity;
             });
+          }),
+          patients.map(patient=>{
+            return knex('patient_nurse')
+            .select(knex.raw('count(*) as assigned'))
+            .where('patient_id', patient.id)
+            .andWhere('shift_id',shift_id)
+            .then(assigned=>{
+              patient.assigned =assigned;
+            });
           })
         ).then(()=>{
           return patients;
