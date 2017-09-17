@@ -2,10 +2,21 @@ const knex = require('./knex');
 
 module.exports = {
   getAllPatients: (shift_id) => {
+    let shift_id_assigned = Number(shift_id) + 1;
     return knex('patient')
       .then(patients=> {
-        return Promise.all(
-          patients.map(patient=>{
+        //return Promise.all(
+            const promise_1 = patients.map(patient=>{
+            return knex('patient_nurse')
+            .select(knex.raw('count(*) as assigned'))
+            .where('patient_id', patient.id)
+            .andWhere('shift_id',shift_id_assigned)
+            .first()
+            .then(assigned_val=>{
+              patient.assigned = assigned_val.assigned;
+            });
+          });
+          const promise_2 =  patients.map(patient=>{
             return knex('patient_objective_acuity')
             .leftJoin('objective_acuity', 'patient_objective_acuity.objective_acuity_id', 'objective_acuity.id')
             .select('objective_acuity_id', 'value', 'name', 'data_type')
@@ -14,8 +25,8 @@ module.exports = {
             .then(patient_oacuity=>{
               patient.oacuity = patient_oacuity;
             });
-          }),
-          patients.map(patient=>{
+          });
+          const promise_3 = patients.map(patient=>{
             return knex('patient_subjective_acuity')
             .leftJoin('subjective_acuity', 'patient_subjective_acuity.subjective_acuity_id', 'subjective_acuity.id')
             .select('subjective_acuity_id', 'value', 'name', 'data_type', 'nurse_id')
@@ -24,18 +35,9 @@ module.exports = {
             .then(patient_sacuity=>{
               patient.sacuity = patient_sacuity;
             });
-          }),
-          patients.map(patient=>{
-            return knex('patient_nurse')
-            .select(knex.raw('count(*) as assigned'))
-            .where('patient_id', patient.id)
-            .andWhere('shift_id',shift_id)
-            .then(assigned=>{
-              patient.assigned =assigned;
-            });
-          })
-        ).then(()=>{
-          return patients;
+          });
+          return Promise.all(promise_1.concat(promise_2).concat(promise_3)).then(()=>{
+            return patients;
         });
       });
   },
