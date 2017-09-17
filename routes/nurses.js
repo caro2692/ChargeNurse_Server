@@ -25,9 +25,10 @@ Router.post('/assignement', (req, res) => {
 });
 
 Router.delete('/assignement', (req, res) => {
+  console.log('in route');
   Queries.deleteOneAssignement(req.body)
     .then(result=>{
-        res.send('deleting one assignement')
+        res.send('deleting one assignement');
     });
 });
 
