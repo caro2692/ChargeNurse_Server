@@ -17,18 +17,26 @@ Router.get('/:id', (req, res) => {
     });
 });
 
-Router.post('/assignement', (req, res) => {
-  Queries.insertOneAssignement(req.body)
+Router.post('/assignment', (req, res) => {
+  Queries.insertOneAssignment(req.body)
     .then(result=>{
         res.send(result);
     });
 });
 
-Router.delete('/assignement', (req, res) => {
-  Queries.deleteOneAssignement(req.query)
+Router.delete('/assignment', (req, res) => {
+  Queries.deleteOneAssignment(req.query)
     .then(result=>{
-        res.send('deleting one assignement');
+        res.send('deleting one assignment');
     });
 });
+
+Router.put('/assignment', (req, res) => {
+  Queries.updateOneAssignment(req.body)
+    .then(result=>{
+      res.send(result);
+    });
+});
+
 
 module.exports = Router;

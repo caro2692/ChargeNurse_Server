@@ -52,7 +52,7 @@ module.exports = {
     return Promise.all(promises)
       .then(results=>{
         const nurses = results[0];
-        const assignements = results[1];
+        const s = results[1];
         //reduce assignemnts so the key is nurse id and value is patients for more efficient assignemnts
         let initial_value = {};
         var reducer = function(tally, value) {
@@ -60,8 +60,8 @@ module.exports = {
           tally[value.nurse_id] = value.patients;
           return tally;
         };
-        var assignements_reduced = assignements.reduce(reducer,  initial_value);
-        //go through assignement_nurse and have nurse_id: assignements
+        var assignments_reduced = assignments.reduce(reducer,  initial_value);
+        //go through assignment_nurse and have nurse_id: assignments
         return Promise.all(
           nurses.map(nurse=>{
             return knex('nurse_objective_acuity')
@@ -74,8 +74,8 @@ module.exports = {
           })
         ).then(()=>{
           nurses.forEach((nurse)=>{
-            if(assignements_reduced[nurse.id]){
-              nurse.patients = assignements_reduced[nurse.id];
+            if(assignments_reduced[nurse.id]){
+              nurse.patients = assignments_reduced[nurse.id];
             } else {
               nurse.patients = [];
             }
@@ -90,15 +90,21 @@ module.exports = {
   getOneNurse: (id) => {
     return knex('nurse').where('id', id);
   },
-  insertOneAssignement: (assignement) => {
-    return knex('patient_nurse').insert(assignement).returning('*');
+  insertOneAssignment: (assignment) => {
+    return knex('patient_nurse').insert(assignment).returning('*');
   },
-  deleteOneAssignement: (assignement) => {
-    console.log(assignement);
+  deleteOneAssignment: (assignment) => {
     return knex('patient_nurse')
-    .where('shift_id', assignement.shift_id)
-    .andWhere('nurse_id', assignement.nurse_id)
-    .andWhere('patient_id', assignement.patient_id)
+    .where('shift_id', assignment.shift_id)
+    .andWhere('nurse_id', assignment.nurse_id)
+    .andWhere('patient_id', assignment.patient_id)
     .del();
+  },
+  updateOneAssignment: (assignment) => {
+    return knex('patient_nurse')
+    .where('shift_id', assignment.shift_id)
+    .andWhere('patient_id', assignment.patient_id)
+    .update('nurse_id', assignment.nurse_id)
+    .returning('*');
   }
 };
