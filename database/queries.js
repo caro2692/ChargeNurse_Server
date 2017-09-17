@@ -92,5 +92,12 @@ module.exports = {
   },
   insertOneAssignement: (assignement) => {
     return knex('patient_nurse').insert(assignement).returning('*');
+  },
+  deleteOneAssignement: (assignement) => {
+    return knex('patient_nurse')
+    .where('shift_id', assignement.shift_id)
+    .andWhere('nurse_id', assignement.nurse_id)
+    .andWhere('patient_id', assignement.patient_id)
+    .del();
   }
 };

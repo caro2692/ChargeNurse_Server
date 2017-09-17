@@ -24,4 +24,11 @@ Router.post('/assignement', (req, res) => {
     });
 });
 
+Router.delete('/assignement', (req, res) => {
+  Queries.deleteOneAssignement(req.body)
+    .then(result=>{
+        res.send('deleting one assignement')
+    });
+});
+
 module.exports = Router;
