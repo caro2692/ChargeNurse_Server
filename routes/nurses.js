@@ -17,4 +17,11 @@ Router.get('/:id', (req, res) => {
     });
 });
 
+Router.post('/assignement', (req, res) => {
+  Queries.insertOneAssignement(req.body)
+    .then(result=>{
+        res.send(result);
+    });
+});
+
 module.exports = Router;

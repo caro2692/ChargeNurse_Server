@@ -78,5 +78,8 @@ module.exports = {
   },
   getOneNurse: (id) => {
     return knex('nurse').where('id', id);
+  },
+  insertOneAssignement: (assignement) => {
+    return knex('patient_nurse').insert(assignement).returning('*');
   }
 };
