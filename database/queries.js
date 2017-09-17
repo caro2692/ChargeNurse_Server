@@ -94,6 +94,7 @@ module.exports = {
     return knex('patient_nurse').insert(assignement).returning('*');
   },
   deleteOneAssignement: (assignement) => {
+    console.log(assignement);
     return knex('patient_nurse')
     .where('shift_id', assignement.shift_id)
     .andWhere('nurse_id', assignement.nurse_id)
