@@ -26,7 +26,9 @@ Router.post('/assignement', (req, res) => {
 
 Router.delete('/assignement', (req, res) => {
   console.log('in route');
-  console.log(req);
+  console.log(req.query);
+  console.log('that was query');
+  console.log(req.params);
   console.log(req.body);
   Queries.deleteOneAssignement(req.body)
     .then(result=>{
