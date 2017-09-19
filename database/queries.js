@@ -36,7 +36,18 @@ module.exports = {
               patient.sacuity = patient_sacuity;
             });
           });
-          return Promise.all(promise_1.concat(promise_2).concat(promise_3)).then(()=>{
+          const promise_4 = patients.map(patient =>{
+            return knex('patient_nurse')
+            .innerJoin('shift','patient_nurse.shift_id','shift.id')
+            .select(knex.raw('nurse_id, count(*) AS shift_count'))
+            .where('patient_id', patient.id)
+            .andWhereNot('shift.id', shift_id_assigned)
+            .groupByRaw('patient_id, nurse_id')
+            .then(patient_shifts=>{
+              patient.previous_nurses = patient_shifts;
+            });
+          });
+          return Promise.all(promise_1.concat(promise_2).concat(promise_3).concat(promise_4)).then(()=>{
             return patients;
         });
       });
