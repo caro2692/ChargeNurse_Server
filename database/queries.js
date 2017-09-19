@@ -43,7 +43,7 @@ module.exports = {
   },
   getAllNurses: (shift_id) => {
     const promises = [
-      knex('nurse'),
+      knex('nurse').innerJoin('nurse_shift', 'nurse.id', 'nurse_shift.nurse_id').where('shift_id', shift_id),
       knex('patient_nurse')
       .select(['nurse_id', knex.raw('ARRAY_AGG(patient_id) as patients')])
       .where('shift_id', shift_id)
