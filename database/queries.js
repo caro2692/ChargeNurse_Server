@@ -3,7 +3,7 @@ const knex = require('./knex');
 module.exports = {
   getAllPatients: (shift_id) => {
     let shift_id_assigned = Number(shift_id) + 1;
-    return knex('patient')
+    return knex('patient').innerJoin('patient_shift', 'patient.id', 'patient_shift.patient_id').where('shift_id', shift_id_assigned)
       .then(patients=> {
         //return Promise.all(
             const promise_1 = patients.map(patient=>{
